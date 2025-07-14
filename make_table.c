@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:06:00 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/03 16:19:12 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/14 03:13:23 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,41 +50,53 @@ void	read_input(int ac, char **av)
 // 	pthread_create(thread2, NULL, threadFunc, NULL);
 // }
 
-void	init_philop(t_philop *pimp)
+void	init_philop(t_table *pimp)
 {
 	size_t	i;
-	t_table	*ppl;
 
+	i = 0;
 	while (i < ppl->head)
 	{
-		pimp->id = i;
-		pimp->eat_count = 0;
-		pimp->last_time_eat = 0;
+		pimp->philop[i].id = i;
+		pimp->philop[i].eat_count = 0;
+		pimp->philop[i].last_time_eat = 0;
+		pimp->philop[i].fork = i; 
+		pimp->philop[i].l_fork = &pimp->forks[i];
+		if (ppl->head != 1)
+			pimp->philop[i].r_fork = &pimp->forks[i + 1];
+		else
+			pimp->philop[i].r_fork = &pimp->forks[i];
 		i++;
 	}
 }
 
-void	make_philops(t_philop *pp)
+//here allocating the memory for philosophers, mark each philop's id
+void	make_philops(t_table *pp)
 {
-	size_t	size;
-	t_table	*pimp;
+	size_t	splop;
+	size_t	sfork;
 	int		id;
+	int	checker;
 
 	id = 0;
-	size = (sizeof(t_philop) * pimp->head);
-	while (id < pimp->head)
+	splop = (sizeof(t_philop) * pp->head);
+	sfork = (sizeof(pthread_mutex_t) * pp->head);
+	pp->garbabe_location = malloc_table_sth(splop, pp);//do I need a pointer here?
+	pp->forks = malloc_table_sth(sfork, pp);
+	while (id < pp->head)
 	{
-		pimp = malloc_table_sth((void *)pimp, size);
-		pimp = 
+		checker = pthread_mutex_init(&pp->forks[id], NULL);
+		if (checker != 0)
+			exit(pp);
 		id++;
 	}
 }
 
 void	make_table(int ac, char **av)
 {
-	t_philop	*pimp;
+	t_table	*pimp;
 
 	read_input(ac, av);
-	init_philop(pimp);
 	make_philops(pimp);
+	init_philop(pimp);
 }

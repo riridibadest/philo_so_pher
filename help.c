@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:33:31 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/03 16:18:40 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/14 03:13:14 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 //create a list that technically store the same struct and return pointer at
 // end of list
 
-t_list	*malloc_table_sth(void *prt, size_t size)
+t_list	*malloc_table_sth(size_t size, t_table *pp)
 {
 	void	*pt;
 	t_list	*elements;
@@ -30,7 +30,13 @@ t_list	*malloc_table_sth(void *prt, size_t size)
 		free(pt);
 		return (NULL);
 	}
-	elements->now = pt;
-	elements = elements->next;
-	return (elements);
+	if (elements->now == NULL)
+		elements->now = pt;
+	else
+	{
+		elements->next = pt;
+		elements = elements->next;
+	}
+		return (pt);
 }
+
