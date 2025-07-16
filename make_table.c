@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:06:00 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/14 03:13:23 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/16 21:52:38 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,9 @@ void	read_input(int ac, char **av)
 		feast.eat_time = ft_atoi(av[3]);
 		feast.sleep_time = ft_atoi(av[4]);
 		if (ac == 6)
-			feast.min_time_to_eat = ft_atoi(av[5]);
+			feast.min_times_to_eat = ft_atoi(av[5]);
+		feast.someone_died = false;
+		feast.start_time = get_time_ms();
 	}
 	else
 	{
@@ -55,17 +57,19 @@ void	init_philop(t_table *pimp)
 	size_t	i;
 
 	i = 0;
-	while (i < ppl->head)
+	while (i < pimp->head)
 	{
 		pimp->philop[i].id = i;
 		pimp->philop[i].eat_count = 0;
 		pimp->philop[i].last_time_eat = 0;
-		pimp->philop[i].fork = i; 
+		pimp->philop[i].fork = i;
 		pimp->philop[i].l_fork = &pimp->forks[i];
-		if (ppl->head != 1)
-			pimp->philop[i].r_fork = &pimp->forks[i + 1];
-		else
+		if (pimp->head == 1)
 			pimp->philop[i].r_fork = &pimp->forks[i];
+		else if (i == pimp->head - 1)
+			pimp->philop[i].r_fork = &pimp->forks[0];
+		else
+			pimp->philop[i].r_fork = &pimp->forks[i + 1];
 		i++;
 	}
 }
@@ -76,12 +80,12 @@ void	make_philops(t_table *pp)
 	size_t	splop;
 	size_t	sfork;
 	int		id;
-	int	checker;
+	int		checker;
 
 	id = 0;
 	splop = (sizeof(t_philop) * pp->head);
 	sfork = (sizeof(pthread_mutex_t) * pp->head);
-	pp->garbabe_location = malloc_table_sth(splop, pp);//do I need a pointer here?
+	pp->philop = malloc_table_sth(splop, pp);
 	pp->forks = malloc_table_sth(sfork, pp);
 	while (id < pp->head)
 	{
