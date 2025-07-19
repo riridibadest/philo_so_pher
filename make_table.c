@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:06:00 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/16 21:52:38 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/19 16:53:59 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,27 +16,24 @@
 //number of ppl, and the things they do. Allocate memories too
 
 //the parse take the arguements: and return a pointer/NULL
-t_table	*read_input(int ac, char **av)
+t_table	read_input(int ac, char **av)
 {
-	t_table	*feast;
+	t_table	feast;
 	size_t	table;
 
-	table = sizeof(t_table);
-	feast = malloc_table_sth(table);//problem, where is pp from
-	if (!feast)
-		return ;
-	feast->head = ft_atoi(av[1]);
-	if (feast->head == 0)
+	feast.head = ft_atoi(av[1]);
+	if (feast.head == 0)
 	{
 		printf("Wrong number of Philosophers");
-		return (NULL);
+		exit (EXIT_FAILURE);
 	}
-	feast->die_time = ft_atoi(av[2]);
-	feast->eat_time = ft_atoi(av[3]);
-	feast->sleep_time = ft_atoi(av[4]);
-	feast->min_times_to_eat = -1;
-	feast->someone_died = false;
-	feast->start_time = get_time_ms();
+	feast.die_time = ft_atoi(av[2]);
+	feast.eat_time = ft_atoi(av[3]);
+	feast.sleep_time = ft_atoi(av[4]);
+	feast.min_times_to_eat = -1;
+	feast.someone_died = false;
+	feast.start_time = get_time_ms();
+	pthread_mutex_init(&feast.death, NULL);
 	if (ac == 6)
 		feast.min_times_to_eat = ft_atoi(av[5]);
 	return (feast);
@@ -84,8 +81,8 @@ void	make_philops(t_table *pp)
 	id = 0;
 	splop = (sizeof(t_philop) * pp->head);
 	sfork = (sizeof(pthread_mutex_t) * pp->head);
-	pp->philop = malloc_table_sth(splop, pp);
-	pp->forks = malloc_table_sth(sfork, pp);
+	pp->philop = malloc_table_sth(splop);
+	pp->forks = malloc_table_sth(sfork);
 	while (id < pp->head)
 	{
 		checker = pthread_mutex_init(&pp->forks[id], NULL);
@@ -95,12 +92,12 @@ void	make_philops(t_table *pp)
 	}
 }
 
-t_table	*make_table(int ac, char **av)
+t_table	make_table(int ac, char **av)
 {
-	t_table	*pimp;
+	t_table	pimp;
 
 	pimp = read_input(ac, av);
-	make_philops(pimp);
-	init_philop(pimp);
+	make_philops(&pimp);
+	init_philop(&pimp);
 	return (pimp);
 }

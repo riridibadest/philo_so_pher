@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 21:19:44 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/16 22:03:36 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/19 17:03:25 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	eat(t_philop *pp)
 
 	id = pp->id;
 	if (pp->full == 1)
-		return	;
+		return ;
 	if (pp->table->head == 1)
 		solo_eating(pp);
 	pthread_mutex_lock(pp->r_fork);
@@ -33,18 +33,18 @@ void	eat(t_philop *pp)
 	pthread_mutex_unlock(pp->l_fork);
 }
 
-void	sleep(t_philop *pp)
+void	p_sleep(t_philop *pp)
 {
 	o_print(pp->table, 3, pp->id);
 	smart_rest(&pp, pp->table->sleep_time);
 }
 
-void thinking(t_philop *pp)
+void	thinking(t_philop *pp)
 {
 	o_print(pp->table, 4, pp->id);
 }
 
-void solo_eating(t_philop *pp)
+void	solo_eating(t_philop *pp)
 {
 	int	id;
 

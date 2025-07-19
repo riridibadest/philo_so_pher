@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:33:31 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/16 22:01:06 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/19 17:15:01 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ t_list	*malloc_table_sth(size_t size)
 {
 	void	*pt;
 	t_list	*elements;
-	t_table *pp;
+	t_table	*pp;
 
 	pt = malloc(size);
 	if (!pt)
@@ -31,7 +31,7 @@ t_list	*malloc_table_sth(size_t size)
 		free(pt);
 		return (NULL);
 	}
-	if (pp = NULL)
+	if (pp == NULL)
 		pp = pt;
 	elements->now = pt;
 	elements->front = pp->garbabe_location;
@@ -60,13 +60,9 @@ size_t	eat_gap(t_table *pp, int id)
 
 void	o_print(t_table *pp, int i, int id)
 {
-	size_t	time;
+	int	time;
 
 	time = (get_time_ms() - pp->start_time);
-	pthread_mutex_lock(&pp->death);
-		if (pp->someone_died)
-			return ;
-	pthread_mutex_unlock(&pp->death);
 	pthread_mutex_lock(&pp->p_lock);
 	if (i == 1)
 		printf("%d, %d has taken a fork\n", time, id);
@@ -97,11 +93,11 @@ void	smart_rest(t_philop *pp, size_t i)
 	now = get_time_ms();
 	while (get_time_ms() - now < i)
 	{
-		pthread_mutex_lock(&pp->death);
-		state = pp->table->someone_died
-		if (state == true)
+		pthread_mutex_lock(&pp->table->death);
+		state = pp->table->someone_died;
+		pthread_mutex_unlock(&pp->table->death);
+		if (state)
 			return ;
-		pthread_mutex_unlock(&pp->death);
 		usleep(1000);
 	}
 }

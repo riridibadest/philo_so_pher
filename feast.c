@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   dinner.c                                           :+:      :+:    :+:   */
+/*   feast.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 17:24:33 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/16 22:14:22 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/19 17:14:11 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ int	feast_time(t_table *pp)
 	pp->start_time = get_time_ms();
 	while (i < pp->head)
 	{
-		pthread_create(&pp->philop[i].thread, NULL, life_of_philop, &pp->philop[i]);
+		pthread_create(&pp->philop[i].thread, NULL, life_of_philop,
+				&pp->philop[i]);
 		i++;
 	}
 	i = 0;
@@ -40,46 +41,48 @@ int	feast_time(t_table *pp)
 void	*life_of_philop(void *pp)
 {
 	t_philop	*philop;
-	bool	state;
+	bool		state;
 
 	philop = (t_philop *)pp;
 	if (philop->full == 1)
-		return	;
+		return (NULL);
 	while (1)
 	{
-		pthread_mutex_lock(&pp->death);
+		pthread_mutex_lock(&philop->table->death);
 		state = philop->table->someone_died;
-		pthread_mutex_unlock(&pp->death);
+		pthread_mutex_unlock(&philop->table->death);
 		if (state)
-			return ;
+			return (NULL);
 		eat(philop);
-		sleep(philop);
-		think(philop);
+		p_sleep(philop);
+		thinking(philop);
 	}
-	return NULL;
+	return (NULL);
 }
 
 //have to set checking_dead in the routine. so philops exit in time
-int	dead_yet(t_table *eye)
+void	*dead_yet(void *pp)
 {
-	int	id;
+	int		id;
+	t_table	*eye;
 
+	eye = (t_table *)pp;
 	id = 0;
 	while (id < eye->head && eye->someone_died != true)
 	{
-			if (eat_gap(eye, id) > eye->die_time)
-			{
-
-				return (o_print(eye, 5, id), 1);
-			}
-			id++;
-			if (id == eye->head)
-			{
-				if (we_r_full(eye) == 0)
-					return (o_print(eye, 6, id), 1);
-				id = 0;
-			}
+		if (eat_gap(eye, id) > eye->die_time)
+		{
+			return (o_print(eye, 5, id), NULL);
+		}
+		id++;
+		if (id == eye->head)
+		{
+			if (we_r_full(eye) == 0)
+				return (o_print(eye, 6, id), NULL);
+			id = 0;
+		}
 	}
+	return (NULL);
 }
 
 int	we_r_full(t_table *pp)
