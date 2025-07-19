@@ -12,23 +12,65 @@
 
 #include "philo.h"
 
-
-int	main(int ac, char **av)
+void clean_up(t_list *garbabe)
 {
-	t_table	*pp;
+    t_list *temp;
 
-	if (ok_input(ac, av) == 0)
-		return (printf("Wrong Input or Wrong Number of Arguments"), 1);
-	pp = make_table(ac, av);
-	feast_time(pp);
-	clean_up(pp->garbabe_location);
-	free(pp);
-	return (0);
+    while (garbabe != NULL)
+    {
+        temp = garbabe;
+        garbabe = garbabe->front;
+        free (temp->now);
+        free (temp);
+    }
 }
 
+//1 = ok, 0 != ok;
 
-	
-	//1.parse the numbers and time to initialize the system:number of ppl, and the things they do. Allocate memories too
-	//2.the process of taking the fork, eat and repeat. (have to now make sure all ppl eat, and log the state of each plop)
-	//3.make sure they die if the condition not satisfied.
-	//4.Clear all the things stored within.
+int ok_input(int ac, char** av)
+{
+    int i;
+    int h;
+
+    i = 1;
+    if (ac != 5 && ac != 6)
+        return (0);
+    while (i < ac - 1;)
+    {
+        h = 0;
+        while (av[i][h])
+        {
+            if (ft_isdigit(av[i][h]) == 0)
+                return (0);
+            h++;
+        }
+        i++;
+    }
+    if (zero(ac, av) == 0)
+        return (0);
+    return (1);
+}
+
+int ft_isdigit(int num)
+{
+    if (num >= '0' && num <= '9')
+        return (1);
+    else
+        return (0);
+}
+
+int zero(int ac, char** av)
+{
+    int i;
+
+    i = 1;
+    while (i <= ac - 1)
+	{
+		if (ft_atoi(av[i]) == 0)
+		{
+			return (0);
+		}
+		i++;
+	}
+	return (1);
+}

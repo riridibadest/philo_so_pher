@@ -16,31 +16,30 @@
 //number of ppl, and the things they do. Allocate memories too
 
 //the parse take the arguements: and return a pointer/NULL
-void	read_input(int ac, char **av)
+t_table	*read_input(int ac, char **av)
 {
-	t_table	feast;
+	t_table	*feast;
+	size_t	table;
 
-	if (ac == 5 || ac == 6)
+	table = sizeof(t_table);
+	feast = malloc_table_sth(table);//problem, where is pp from
+	if (!feast)
+		return ;
+	feast->head = ft_atoi(av[1]);
+	if (feast->head == 0)
 	{
-		feast.head = ft_atoi(av[1]);
-		if (feast.head == 0)
-		{
-			printf("Wrong number of Philosophers");
-			return (NULL);
-		}
-		feast.die_time = ft_atoi(av[2]);
-		feast.eat_time = ft_atoi(av[3]);
-		feast.sleep_time = ft_atoi(av[4]);
-		if (ac == 6)
-			feast.min_times_to_eat = ft_atoi(av[5]);
-		feast.someone_died = false;
-		feast.start_time = get_time_ms();
-	}
-	else
-	{
-		printf("Wrong number of arguments");
+		printf("Wrong number of Philosophers");
 		return (NULL);
 	}
+	feast->die_time = ft_atoi(av[2]);
+	feast->eat_time = ft_atoi(av[3]);
+	feast->sleep_time = ft_atoi(av[4]);
+	feast->min_times_to_eat = -1;
+	feast->someone_died = false;
+	feast->start_time = get_time_ms();
+	if (ac == 6)
+		feast.min_times_to_eat = ft_atoi(av[5]);
+	return (feast);
 }
 
 // int	create(void)
@@ -96,11 +95,12 @@ void	make_philops(t_table *pp)
 	}
 }
 
-void	make_table(int ac, char **av)
+t_table	*make_table(int ac, char **av)
 {
 	t_table	*pimp;
 
-	read_input(ac, av);
+	pimp = read_input(ac, av);
 	make_philops(pimp);
 	init_philop(pimp);
+	return (pimp);
 }

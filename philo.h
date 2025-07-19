@@ -21,10 +21,12 @@ typedef struct s_philop
 	int				id;
 	int				eat_count;
 	int				fork;
+	int	full;
 	pthread_mutex_t	*r_fork;
 	pthread_mutex_t	*l_fork;
 	pthread_t		thread;
 	size_t			last_time_eat;
+	struct s_table	*table;
 }					t_philop;
 
 //for other purpose maybe
@@ -41,10 +43,10 @@ typedef struct s_table
 	int				die_time;
 	int				eat_time;
 	int				sleep_time;
-	int				think_time;
 	int				min_times_to_eat;
 	bool			someone_died;
 	t_list			*garbabe_location;
+	pthread_mutex_t	death;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	p_lock;
 	t_philop		*philop;
