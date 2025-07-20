@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:33:31 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/16 22:01:06 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/20 22:00:19 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,10 @@
 //create a list that technically store the same struct and return pointer at
 // end of list
 
-t_list	*malloc_table_sth(size_t size)
+void	*malloc_table_sth(t_table *pp, size_t size)
 {
 	void	*pt;
 	t_list	*elements;
-	t_table *pp;
 
 	pt = malloc(size);
 	if (!pt)
@@ -31,8 +30,6 @@ t_list	*malloc_table_sth(size_t size)
 		free(pt);
 		return (NULL);
 	}
-	if (pp = NULL)
-		pp = pt;
 	elements->now = pt;
 	elements->front = pp->garbabe_location;
 	pp->garbabe_location = elements;
@@ -58,35 +55,31 @@ size_t	eat_gap(t_table *pp, int id)
 }
 //1 = takefork; 2 = eating; 3 = sleeping; 4 = thinking; 5 = died
 
-void	o_print(t_table *pp, int i, int id)
+void	o_print(t_philop *pp, int i, int id)
 {
-	size_t	time;
+	int	time;
 
-	time = (get_time_ms() - pp->start_time);
-	pthread_mutex_lock(&pp->death);
-		if (pp->someone_died)
-			return ;
-	pthread_mutex_unlock(&pp->death);
-	pthread_mutex_lock(&pp->p_lock);
+	time = (get_time_ms() - pp->table->start_time);
+	pthread_mutex_lock(&pp->table->p_lock);
 	if (i == 1)
-		printf("%d, %d has taken a fork\n", time, id);
+		printf("%d, %d has taken a fork\n", time, (id + 1));
 	else if (i == 2)
-		printf("%d, %d is eating\n", time, id);
+		printf("%d, %d is eating\n", time, (id + 1));
 	else if (i == 3)
-		printf("%d, %d is sleeping\n", time, id);
+		printf("%d, %d is sleeping\n", time, (id + 1));
 	else if (i == 4)
-		printf("%d, %d is thinking\n", time, id);
+		printf("%d, %d is thinking\n", time, (id + 1));
 	else if (i == 6)
 		printf("%d, Everyone is full\n", time);
 	else if (i == 5)
 	{
-		pthread_mutex_lock(&pp->death);
-		if (!pp->someone_died)
-			pp->someone_died = true;
+		pthread_mutex_lock(&pp->table->death);
+		if (!pp->table->someone_died)
+			pp->table->someone_died = true;
 		printf("%d, %d died\n", time, id);
-		pthread_mutex_unlock(&pp->death);
+		pthread_mutex_unlock(&pp->table->death);
 	}
-	pthread_mutex_unlock(&pp->p_lock);
+	pthread_mutex_unlock(&pp->table->p_lock);
 }
 
 void	smart_rest(t_philop *pp, size_t i)
@@ -97,11 +90,11 @@ void	smart_rest(t_philop *pp, size_t i)
 	now = get_time_ms();
 	while (get_time_ms() - now < i)
 	{
-		pthread_mutex_lock(&pp->death);
-		state = pp->table->someone_died
-		if (state == true)
+		pthread_mutex_lock(&pp->table->death);
+		state = pp->table->someone_died;
+		pthread_mutex_unlock(&pp->table->death);
+		if (state)
 			return ;
-		pthread_mutex_unlock(&pp->death);
 		usleep(1000);
 	}
 }
