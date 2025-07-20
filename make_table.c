@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:06:00 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/19 16:53:59 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/20 22:07:27 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 t_table	read_input(int ac, char **av)
 {
 	t_table	feast;
-	size_t	table;
 
 	feast.head = ft_atoi(av[1]);
 	if (feast.head == 0)
@@ -33,6 +32,7 @@ t_table	read_input(int ac, char **av)
 	feast.min_times_to_eat = -1;
 	feast.someone_died = false;
 	feast.start_time = get_time_ms();
+	feast.garbabe_location = NULL;
 	pthread_mutex_init(&feast.death, NULL);
 	if (ac == 6)
 		feast.min_times_to_eat = ft_atoi(av[5]);
@@ -50,7 +50,7 @@ t_table	read_input(int ac, char **av)
 
 void	init_philop(t_table *pimp)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
 	while (i < pimp->head)
@@ -60,6 +60,8 @@ void	init_philop(t_table *pimp)
 		pimp->philop[i].last_time_eat = 0;
 		pimp->philop[i].fork = i;
 		pimp->philop[i].l_fork = &pimp->forks[i];
+		pimp->philop[i].full = 0;
+		pimp->philop[i].table = pimp;
 		if (pimp->head == 1)
 			pimp->philop[i].r_fork = &pimp->forks[i];
 		else if (i == pimp->head - 1)
@@ -81,13 +83,13 @@ void	make_philops(t_table *pp)
 	id = 0;
 	splop = (sizeof(t_philop) * pp->head);
 	sfork = (sizeof(pthread_mutex_t) * pp->head);
-	pp->philop = malloc_table_sth(splop);
-	pp->forks = malloc_table_sth(sfork);
+	pp->philop = malloc_table_sth(pp, splop);
+	pp->forks = malloc_table_sth(pp, sfork);
 	while (id < pp->head)
 	{
 		checker = pthread_mutex_init(&pp->forks[id], NULL);
 		if (checker != 0)
-			exit(pp);
+			exit(EXIT_FAILURE);
 		id++;
 	}
 }

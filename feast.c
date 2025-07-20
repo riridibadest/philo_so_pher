@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 17:24:33 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/19 17:14:11 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/20 22:06:33 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,11 @@ int	feast_time(t_table *pp)
 
 	i = 0;
 	pp->start_time = get_time_ms();
+
 	while (i < pp->head)
 	{
 		pthread_create(&pp->philop[i].thread, NULL, life_of_philop,
-				&pp->philop[i]);
+			&pp->philop[i]);
 		i++;
 	}
 	i = 0;
@@ -43,6 +44,8 @@ void	*life_of_philop(void *pp)
 	t_philop	*philop;
 	bool		state;
 
+	if (pp == NULL)
+		return (NULL);
 	philop = (t_philop *)pp;
 	if (philop->full == 1)
 		return (NULL);
@@ -53,6 +56,7 @@ void	*life_of_philop(void *pp)
 		pthread_mutex_unlock(&philop->table->death);
 		if (state)
 			return (NULL);
+		usleep(300);
 		eat(philop);
 		p_sleep(philop);
 		thinking(philop);
@@ -71,14 +75,12 @@ void	*dead_yet(void *pp)
 	while (id < eye->head && eye->someone_died != true)
 	{
 		if (eat_gap(eye, id) > eye->die_time)
-		{
-			return (o_print(eye, 5, id), NULL);
-		}
+			return (o_print(&eye->philop[id], 5, id), NULL);
 		id++;
 		if (id == eye->head)
 		{
 			if (we_r_full(eye) == 0)
-				return (o_print(eye, 6, id), NULL);
+				return (o_print(&eye->philop[id], 6, id), NULL);
 			id = 0;
 		}
 	}
