@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:33:31 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/20 22:00:19 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/22 23:05:51 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,10 @@ size_t	get_time_ms(void)
 	return ((time.tv_sec * 1000L) + (time.tv_usec / 1000));
 }
 
-size_t	eat_gap(t_table *pp, int id)
+int	eat_gap(t_table *pp, int id)
 {
 	size_t	now;
-	size_t	hunger_time;
+	int	hunger_time;
 
 	now = get_time_ms();
 	hunger_time = now - pp->philop[id].last_time_eat;
@@ -62,21 +62,21 @@ void	o_print(t_philop *pp, int i, int id)
 	time = (get_time_ms() - pp->table->start_time);
 	pthread_mutex_lock(&pp->table->p_lock);
 	if (i == 1)
-		printf("%d, %d has taken a fork\n", time, (id + 1));
+		printf("%d %d has taken a fork\n", time, (id));
 	else if (i == 2)
-		printf("%d, %d is eating\n", time, (id + 1));
+		printf("%d %d is eating\n", time, (id));
 	else if (i == 3)
-		printf("%d, %d is sleeping\n", time, (id + 1));
+		printf("%d %d is sleeping\n", time, (id));
 	else if (i == 4)
-		printf("%d, %d is thinking\n", time, (id + 1));
+		printf("%d %d is thinking\n", time, (id));
 	else if (i == 6)
-		printf("%d, Everyone is full\n", time);
+		printf("%d Everyone is full\n", time);
 	else if (i == 5)
 	{
 		pthread_mutex_lock(&pp->table->death);
 		if (!pp->table->someone_died)
 			pp->table->someone_died = true;
-		printf("%d, %d died\n", time, id);
+		printf("%d %d has died\n", time, (id));
 		pthread_mutex_unlock(&pp->table->death);
 	}
 	pthread_mutex_unlock(&pp->table->p_lock);
@@ -95,6 +95,6 @@ void	smart_rest(t_philop *pp, size_t i)
 		pthread_mutex_unlock(&pp->table->death);
 		if (state)
 			return ;
-		usleep(1000);
+		usleep(100);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:27:01 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/19 20:46:06 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/22 23:02:49 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ typedef struct s_table
 {
 	int				head;
 	size_t			start_time;
-	size_t			die_time;
+	int			die_time;
 	int				eat_time;
 	int				sleep_time;
 	int				min_times_to_eat;
@@ -72,7 +72,7 @@ int					ft_isdigit(int num);
 int					zero(int ac, char **av);
 void				*malloc_table_sth(t_table *pp, size_t size);
 size_t				get_time_ms(void);
-size_t				eat_gap(t_table *pp, int id);
+int				eat_gap(t_table *pp, int id);
 void				o_print(t_philop *pp, int i, int id);
 int					feast_time(t_table *pp);
 void				*life_of_philop(void *pp);

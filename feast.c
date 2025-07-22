@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 17:24:33 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/20 22:06:33 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/22 23:21:06 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,21 +21,20 @@ int	feast_time(t_table *pp)
 
 	i = 0;
 	pp->start_time = get_time_ms();
-
 	while (i < pp->head)
 	{
 		pthread_create(&pp->philop[i].thread, NULL, life_of_philop,
 			&pp->philop[i]);
 		i++;
 	}
+	pthread_create(&td, NULL, dead_yet, pp);
+	pthread_join(td, NULL);
 	i = 0;
 	while (i < pp->head)
 	{
 		pthread_join(pp->philop[i].thread, NULL);
 		i++;
 	}
-	pthread_create(&td, NULL, dead_yet, pp);
-	pthread_join(td, NULL);
 	return (1);
 }
 
@@ -44,9 +43,11 @@ void	*life_of_philop(void *pp)
 	t_philop	*philop;
 	bool		state;
 
+	philop = (t_philop *)pp;
 	if (pp == NULL)
 		return (NULL);
-	philop = (t_philop *)pp;
+	if (philop->table->someone_died == true)
+		return (NULL);
 	if (philop->full == 1)
 		return (NULL);
 	while (1)
@@ -56,7 +57,6 @@ void	*life_of_philop(void *pp)
 		pthread_mutex_unlock(&philop->table->death);
 		if (state)
 			return (NULL);
-		usleep(300);
 		eat(philop);
 		p_sleep(philop);
 		thinking(philop);
@@ -75,12 +75,19 @@ void	*dead_yet(void *pp)
 	while (id < eye->head && eye->someone_died != true)
 	{
 		if (eat_gap(eye, id) > eye->die_time)
-			return (o_print(&eye->philop[id], 5, id), NULL);
+		{
+			pthread_mutex_lock(&eye->death);
+			eye->someone_died = true;
+			pthread_mutex_unlock(&eye->death);
+			printf("hunger for %d %d\n", id, eat_gap(eye, id));
+			return (o_print(&eye->philop[id], 5, id + 1), NULL);
+		}
 		id++;
 		if (id == eye->head)
 		{
 			if (we_r_full(eye) == 0)
-				return (o_print(&eye->philop[id], 6, id), NULL);
+				return (o_print(&eye->philop[id], 6, id + 1),
+					(eye->someone_died = true), NULL);
 			id = 0;
 		}
 	}
@@ -92,14 +99,12 @@ int	we_r_full(t_table *pp)
 	int	id;
 
 	id = 0;
-	if (pp->min_times_to_eat == -1)
+	if (pp->min_times_to_eat <= -1)
 		return (1);
 	while (id < pp->head)
 	{
 		if (pp->philop[id].eat_count < pp->min_times_to_eat)
 			return (1);
-		if (pp->philop[id].eat_count == pp->min_times_to_eat)
-			pp->philop[id].full = 1;
 		id++;
 	}
 	return (0);

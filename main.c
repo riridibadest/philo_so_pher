@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:26:25 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/20 21:46:07 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/22 22:23:39 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ int	main(int ac, char **av)
 	pp = make_table(ac, av);
 	feast_time(&pp);
 	clean_up(pp.garbabe_location);
+	system("leaks philo");
 	return (0);
 }
 

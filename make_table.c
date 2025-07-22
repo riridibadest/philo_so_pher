@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:06:00 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/20 22:07:27 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/22 21:20:11 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,9 @@ void	init_philop(t_table *pimp)
 	i = 0;
 	while (i < pimp->head)
 	{
-		pimp->philop[i].id = i;
+		pimp->philop[i].id = i + 1;
 		pimp->philop[i].eat_count = 0;
-		pimp->philop[i].last_time_eat = 0;
+		pimp->philop[i].last_time_eat = get_time_ms();
 		pimp->philop[i].fork = i;
 		pimp->philop[i].l_fork = &pimp->forks[i];
 		pimp->philop[i].full = 0;

@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 21:19:44 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/19 20:32:37 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/22 22:52:08 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,26 @@
 void	eat(t_philop *pp)
 {
 	size_t	id;
+	bool	state;
 
 	id = pp->id;
 	if (pp->full == 1)
 		return ;
 	if (pp->table->head == 1)
 		solo_eating(pp);
+	if (id % 2 == 0)
+		usleep (200);
+	pthread_mutex_lock(&pp->table->death);
+	state = pp->table->someone_died;
+	pthread_mutex_unlock(&pp->table->death);
+	if (state)
+		return ;
 	pthread_mutex_lock(pp->r_fork);
 	o_print(pp, 1, id);
 	pthread_mutex_lock(pp->l_fork);
 	o_print(pp, 1, id);
-	o_print(pp, 2, id);
 	pp->last_time_eat = get_time_ms();
+	o_print(pp, 2, id);
 	pp->eat_count++;
 	smart_rest(pp, pp->table->eat_time);
 	pthread_mutex_unlock(pp->r_fork);
@@ -35,12 +43,26 @@ void	eat(t_philop *pp)
 
 void	p_sleep(t_philop *pp)
 {
+	bool	state;
+
+	pthread_mutex_lock(&pp->table->death);
+	state = pp->table->someone_died;
+	pthread_mutex_unlock(&pp->table->death);
+	if (state)
+		return ;
 	o_print(pp, 3, pp->id);
 	smart_rest(pp, pp->table->sleep_time);
 }
 
 void	thinking(t_philop *pp)
 {
+	bool	state;
+
+	pthread_mutex_lock(&pp->table->death);
+	state = pp->table->someone_died;
+	pthread_mutex_unlock(&pp->table->death);
+	if (state)
+		return ;
 	o_print(pp, 4, pp->id);
 }
 
