@@ -61,6 +61,11 @@ void	o_print(t_philop *pp, int i, int id)
 
 	time = (get_time_ms() - pp->table->start_time);
 	pthread_mutex_lock(&pp->table->p_lock);
+	if (pp->table->someone_died && i != 5)
+	{
+		pthread_mutex_unlock(&pp->table->p_lock);
+		return ;
+	}
 	if (i == 1)
 		printf("%d %d has taken a fork\n", time, (id));
 	else if (i == 2)
@@ -76,7 +81,7 @@ void	o_print(t_philop *pp, int i, int id)
 		pthread_mutex_lock(&pp->table->death);
 		if (!pp->table->someone_died)
 			pp->table->someone_died = true;
-		printf("%d %d has died\n", time, (id));
+		printf("%d %d died\n", time, (id));
 		pthread_mutex_unlock(&pp->table->death);
 	}
 	pthread_mutex_unlock(&pp->table->p_lock);
@@ -95,6 +100,6 @@ void	smart_rest(t_philop *pp, size_t i)
 		pthread_mutex_unlock(&pp->table->death);
 		if (state)
 			return ;
-		usleep(100);
+		usleep(10);
 	}
 }

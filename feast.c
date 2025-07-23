@@ -21,13 +21,13 @@ int	feast_time(t_table *pp)
 
 	i = 0;
 	pp->start_time = get_time_ms();
+	pthread_create(&td, NULL, dead_yet, pp);
 	while (i < pp->head)
 	{
 		pthread_create(&pp->philop[i].thread, NULL, life_of_philop,
 			&pp->philop[i]);
 		i++;
 	}
-	pthread_create(&td, NULL, dead_yet, pp);
 	pthread_join(td, NULL);
 	i = 0;
 	while (i < pp->head)
@@ -48,14 +48,16 @@ void	*life_of_philop(void *pp)
 		return (NULL);
 	if (philop->table->someone_died == true)
 		return (NULL);
-	if (philop->full == 1)
-		return (NULL);
 	while (1)
 	{
 		pthread_mutex_lock(&philop->table->death);
 		state = philop->table->someone_died;
 		pthread_mutex_unlock(&philop->table->death);
 		if (state)
+			return (NULL);
+		if (philop->eat_count == philop->table->min_times_to_eat)
+    		philop->full = 1;
+		if (philop->full == 1)
 			return (NULL);
 		eat(philop);
 		p_sleep(philop);
@@ -79,17 +81,13 @@ void	*dead_yet(void *pp)
 			pthread_mutex_lock(&eye->death);
 			eye->someone_died = true;
 			pthread_mutex_unlock(&eye->death);
-			printf("hunger for %d %d\n", id, eat_gap(eye, id));
 			return (o_print(&eye->philop[id], 5, id + 1), NULL);
 		}
+		if (we_r_full(eye) == 0)
+			return (o_print(&eye->philop[id], 6, id + 1), NULL);
 		id++;
 		if (id == eye->head)
-		{
-			if (we_r_full(eye) == 0)
-				return (o_print(&eye->philop[id], 6, id + 1),
-					(eye->someone_died = true), NULL);
 			id = 0;
-		}
 	}
 	return (NULL);
 }
@@ -103,7 +101,11 @@ int	we_r_full(t_table *pp)
 		return (1);
 	while (id < pp->head)
 	{
-		if (pp->philop[id].eat_count < pp->min_times_to_eat)
+		// if (pp->philop[id].eat_count < pp->min_times_to_eat)
+		// 	return (1);
+		// if (pp->philop[id].eat_count == pp->min_times_to_eat)
+		// 	pp->philop[id].full = 1;
+		if (pp->philop[id].full == 0)
 			return (1);
 		id++;
 	}

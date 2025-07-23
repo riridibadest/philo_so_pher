@@ -18,23 +18,21 @@ void	eat(t_philop *pp)
 	bool	state;
 
 	id = pp->id;
-	if (pp->full == 1)
-		return ;
 	if (pp->table->head == 1)
 		solo_eating(pp);
 	if (id % 2 == 0)
-		usleep (200);
+		usleep (id * 10);
 	pthread_mutex_lock(&pp->table->death);
 	state = pp->table->someone_died;
 	pthread_mutex_unlock(&pp->table->death);
 	if (state)
 		return ;
 	pthread_mutex_lock(pp->r_fork);
-	o_print(pp, 1, id);
 	pthread_mutex_lock(pp->l_fork);
 	o_print(pp, 1, id);
-	pp->last_time_eat = get_time_ms();
+	o_print(pp, 1, id);
 	o_print(pp, 2, id);
+	pp->last_time_eat = get_time_ms();
 	pp->eat_count++;
 	smart_rest(pp, pp->table->eat_time);
 	pthread_mutex_unlock(pp->r_fork);
@@ -50,6 +48,8 @@ void	p_sleep(t_philop *pp)
 	pthread_mutex_unlock(&pp->table->death);
 	if (state)
 		return ;
+	if (pp->full == 1)
+		return ;
 	o_print(pp, 3, pp->id);
 	smart_rest(pp, pp->table->sleep_time);
 }
@@ -63,6 +63,8 @@ void	thinking(t_philop *pp)
 	pthread_mutex_unlock(&pp->table->death);
 	if (state)
 		return ;
+	if (pp->full == 1)
+		return ;
 	o_print(pp, 4, pp->id);
 }
 
@@ -75,5 +77,7 @@ void	solo_eating(t_philop *pp)
 	o_print(pp, 1, id);
 	smart_rest(pp, pp->table->die_time);
 	pthread_mutex_unlock(pp->r_fork);
-	o_print(pp, 5, id);
+	pthread_mutex_lock(&pp->table->death);
+	pp->table->someone_died = true;
+	pthread_mutex_unlock(&pp->table->death);
 }
