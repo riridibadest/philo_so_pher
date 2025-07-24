@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 21:19:44 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/22 22:52:08 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/23 21:01:13 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ void	eat(t_philop *pp)
 	o_print(pp, 2, id);
 	pp->last_time_eat = get_time_ms();
 	pp->eat_count++;
+	if (pp->eat_count == pp->table->min_times_to_eat)
+		pp->full = 1;
 	smart_rest(pp, pp->table->eat_time);
 	pthread_mutex_unlock(pp->r_fork);
 	pthread_mutex_unlock(pp->l_fork);

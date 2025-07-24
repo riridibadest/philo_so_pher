@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 17:24:33 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/22 23:21:06 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/24 19:32:13 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,22 +41,26 @@ int	feast_time(t_table *pp)
 void	*life_of_philop(void *pp)
 {
 	t_philop	*philop;
-	bool		state;
+	//bool		state;
 
 	philop = (t_philop *)pp;
 	if (pp == NULL)
 		return (NULL);
+	pthread_mutex_lock(&philop->table->death);
 	if (philop->table->someone_died == true)
+	{
+		pthread_mutex_unlock(&philop->table->death);
 		return (NULL);
+	}
 	while (1)
 	{
-		pthread_mutex_lock(&philop->table->death);
-		state = philop->table->someone_died;
-		pthread_mutex_unlock(&philop->table->death);
-		if (state)
-			return (NULL);
+		// pthread_mutex_lock(&philop->table->death);
+		// state = philop->table->someone_died;
+		// pthread_mutex_unlock(&philop->table->death);
+		// if (state)
+		// 	return (NULL);
 		if (philop->eat_count == philop->table->min_times_to_eat)
-    		philop->full = 1;
+    			philop->full = 1;
 		if (philop->full == 1)
 			return (NULL);
 		eat(philop);
@@ -76,6 +80,8 @@ void	*dead_yet(void *pp)
 	id = 0;
 	while (id < eye->head && eye->someone_died != true)
 	{
+		if (we_r_full(eye) == 0)
+			return (o_print(&eye->philop[id], 6, id + 1), NULL);
 		if (eat_gap(eye, id) > eye->die_time)
 		{
 			pthread_mutex_lock(&eye->death);
@@ -83,8 +89,6 @@ void	*dead_yet(void *pp)
 			pthread_mutex_unlock(&eye->death);
 			return (o_print(&eye->philop[id], 5, id + 1), NULL);
 		}
-		if (we_r_full(eye) == 0)
-			return (o_print(&eye->philop[id], 6, id + 1), NULL);
 		id++;
 		if (id == eye->head)
 			id = 0;

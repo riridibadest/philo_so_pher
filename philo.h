@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:27:01 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/22 23:02:49 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/23 23:19:54 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,12 @@ void				eat(t_philop *pp);
 void				p_sleep(t_philop *pp);
 void				thinking(t_philop *pp);
 void				solo_eating(t_philop *pp);
-t_table				read_input(int ac, char **av);
+t_table	*read_input(t_table *feast, int ac, char **av);
 void				init_philop(t_table *pimp);
 void				make_philops(t_table *pp);
-t_table				make_table(int ac, char **av);
+//t_table				make_table(int ac, char **av);
 void				make_philops(t_table *pp);
 void				init_philop(t_table *pimp);
-t_table				read_input(int ac, char **av);
 void				clean_up(t_list *garbabe);
 int					ok_input(int ac, char **av);
 int					ft_isdigit(int num);

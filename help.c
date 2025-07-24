@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:33:31 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/22 23:05:51 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/23 23:34:42 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,11 +78,11 @@ void	o_print(t_philop *pp, int i, int id)
 		printf("%d Everyone is full\n", time);
 	else if (i == 5)
 	{
-		pthread_mutex_lock(&pp->table->death);
-		if (!pp->table->someone_died)
-			pp->table->someone_died = true;
+		// pthread_mutex_lock(&pp->table->death);
+		// if (!pp->table->someone_died)
+		// 	pp->table->someone_died = true;
 		printf("%d %d died\n", time, (id));
-		pthread_mutex_unlock(&pp->table->death);
+		// pthread_mutex_unlock(&pp->table->death);
 	}
 	pthread_mutex_unlock(&pp->table->p_lock);
 }
