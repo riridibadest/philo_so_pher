@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../42core-master/philosophers"
+		}
+	],
+	"settings": {}
+}

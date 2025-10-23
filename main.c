@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:26:25 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/24 19:44:10 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/22 22:23:39 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,13 @@
 int	main(int ac, char **av)
 {
 	t_table	pp;
-	t_table	*pimp;
 
 	if (ok_input(ac, av) == 0)
 		return (printf("Wrong Input or Wrong Number of Arguments"), 1);
-	pimp = read_input(&pp, ac, av);
-	feast_time(pimp);
+	pp = make_table(ac, av);
+	feast_time(&pp);
 	clean_up(pp.garbabe_location);
-	//system("leaks philo");
+	// system("leaks philo");
 	return (0);
 }
 

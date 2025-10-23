@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:06:00 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/23 23:19:19 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/07/22 21:20:11 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,27 +16,27 @@
 //number of ppl, and the things they do. Allocate memories too
 
 //the parse take the arguements: and return a pointer/NULL
-t_table	*read_input(t_table *feast, int ac, char **av)
+t_table	read_input(int ac, char **av)
 {
+	t_table	feast;
 
-	feast->head = ft_atoi(av[1]);
-	if (feast->head == 0)
+	feast.head = ft_atoi(av[1]);
+	if (feast.head == 0)
 	{
 		printf("Wrong number of Philosophers");
 		exit (EXIT_FAILURE);
 	}
-	feast->die_time = ft_atoi(av[2]);
-	feast->eat_time = ft_atoi(av[3]);
-	feast->sleep_time = ft_atoi(av[4]);
-	feast->min_times_to_eat = -1;
-	feast->someone_died = false;
-	feast->start_time = get_time_ms();
-	feast->garbabe_location = NULL;
-	pthread_mutex_init(&feast->death, NULL);
-	pthread_mutex_init(&feast->p_lock, NULL);
+	feast.die_time = ft_atoi(av[2]);
+	feast.eat_time = ft_atoi(av[3]);
+	feast.sleep_time = ft_atoi(av[4]);
+	feast.min_times_to_eat = -1;
+	feast.someone_died = false;
+	feast.start_time = 0;
+	feast.garbabe_location = NULL;
+	pthread_mutex_init(&feast.death, NULL);
+	pthread_mutex_init(&feast.p_lock, NULL);
 	if (ac == 6)
-		feast->min_times_to_eat = ft_atoi(av[5]);
-	make_philops(feast);
+		feast.min_times_to_eat = ft_atoi(av[5]);
 	return (feast);
 }
 
@@ -93,15 +93,17 @@ void	make_philops(t_table *pp)
 			exit(EXIT_FAILURE);
 		id++;
 	}
-	init_philop(pp);
 }
 
-// t_table	make_table(int ac, char **av)
-// {
-// 	t_table	pimp;
+t_table	make_table(int ac, char **av)
+{
+	t_table	pimp;
 
-// 	pimp = read_input(ac, av);
-// 	make_philops(&pimp);
-// 	init_philop(&pimp);
-// 	return (pimp);
-// }
+	pimp = read_input(ac, av);
+	make_philops(&pimp);
+	init_philop(&pimp);
+	// Fix: Set start_time after all initialization is complete
+	pimp.start_time = get_time_ms();
+	// Update all philosophers' last_time_eat to match start_time
+	return (pimp);
+}

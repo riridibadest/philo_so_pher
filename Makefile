@@ -7,16 +7,16 @@ IFLAGS := -I.
 NAME := philo
 
 SRC_FILES := feast.c help.c help2.c main.c make_table.c routine.c
-OBJ_FILES := $(SRC_FILES:.c=.o) 
+OBJ_FILES := $(SRC_FILES:.c=.o)
 
 # Rules
 all: $(NAME)
 
 $(NAME): $(OBJ_FILES)
-	$(CC) $(CFLAGS) $(OBJ_FILES) -o $(NAME) -pthread
+	$(CC) $(CFLAGS) $(OBJ_FILES) -o $(NAME)
 
 debug: $(OBJ_FILES)
-	$(CC) -g $(CFLAGS) $(OBJ_FILES) -o $(NAME)_debug -pthread
+	$(CC) -g $(CFLAGS) $(OBJ_FILES) -o $(NAME)_debug
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
