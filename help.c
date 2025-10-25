@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:33:31 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/22 23:05:51 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/10/26 00:51:39 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,9 @@ int	eat_gap(t_table *pp, int id)
 	int	hunger_time;
 
 	now = get_time_ms();
+	pthread_mutex_lock(&pp->philop[id].eatime);
 	hunger_time = now - pp->philop[id].last_time_eat;
+	pthread_mutex_unlock(&pp->philop[id].eatime);
 	return (hunger_time);
 }
 //1 = takefork; 2 = eating; 3 = sleeping; 4 = thinking; 5 = died
@@ -61,9 +63,11 @@ void	o_print(t_philop *pp, int i, int id)
 
 	time = (get_time_ms() - pp->table->start_time);
 	pthread_mutex_lock(&pp->table->p_lock);
+	pthread_mutex_lock(&pp->table->death);
 	if (pp->table->someone_died && i != 5)
 	{
 		pthread_mutex_unlock(&pp->table->p_lock);
+		pthread_mutex_unlock(&pp->table->death);
 		return ;
 	}
 	if (i == 1)
@@ -78,12 +82,11 @@ void	o_print(t_philop *pp, int i, int id)
 		printf("%d Everyone is full\n", time);
 	else if (i == 5)
 	{
-		pthread_mutex_lock(&pp->table->death);
 		if (!pp->table->someone_died)
 			pp->table->someone_died = true;
 		printf("%d %d died\n", time, (id));
-		pthread_mutex_unlock(&pp->table->death);
 	}
+	pthread_mutex_unlock(&pp->table->death);
 	pthread_mutex_unlock(&pp->table->p_lock);
 }
 
@@ -100,7 +103,7 @@ void	smart_rest(t_philop *pp, size_t i)
 		pthread_mutex_unlock(&pp->table->death);
 		if (state)
 			return ;
-		usleep(10);
+		usleep(1000);
 	}
 }
 

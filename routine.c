@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 21:19:44 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/22 22:52:08 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/10/26 00:51:39 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,9 +71,6 @@ void	eat(t_philop *pp)
 	id = pp->id;
 	if (pp->table->head == 1)
 		solo_eating(pp);
-	
-	// The original usleep(100) is removed as it does not prevent deadlock.
-	
 	pthread_mutex_lock(&pp->table->death);
 	state = pp->table->someone_died;
 	pthread_mutex_unlock(&pp->table->death);
@@ -81,20 +78,6 @@ void	eat(t_philop *pp)
 		return ;
 	first = &pp->table->forks[(id - 1 + pp->table->head) % pp->table->head];
 	second = &pp->table->forks[id % pp->table->head];
-	// --- DEADLOCK FIX: ASYMMETRIC LOCKING ---
-	// Philosophers with an EVEN ID (2, 4, ...) lock the RIGHT fork first.
-	// Philosophers with an ODD ID (1, 3, 5, ...) lock the LEFT fork first.
-	// if ((pp->id % 2) != 0) 
-	// { 
-	// 	first = pp->r_fork; 
-	// 	second = pp->l_fork; 
-	// } 
-	// else 
-	// { 
-	// 	first = pp->l_fork; 
-	// 	second = pp->r_fork; 
-	// }
-
 	pthread_mutex_lock(first);
 	pthread_mutex_lock(second);
 	o_print(pp, 1, id); // Log the first fork pickup
@@ -110,12 +93,13 @@ void	eat(t_philop *pp)
 	// if (id == 2)
 	// 	printf("id: %zu, %d\n", id, pp[id - 1].fork);
 	o_print(pp, 2, id);
+	smart_rest(pp, pp->table->eat_time);
+	pthread_mutex_lock(&pp->eatime);
 	pp->last_time_eat = get_time_ms();
 	pp->eat_count++;
 	if (pp->eat_count == pp->table->min_times_to_eat)
 		pp->full = 1;
-	smart_rest(pp, pp->table->eat_time);
-
+	pthread_mutex_unlock(&pp->eatime);
 	// Unlock in the reverse order of locking (second then first)
 	pthread_mutex_unlock(second);
 	pthread_mutex_unlock(first);

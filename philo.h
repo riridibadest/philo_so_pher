@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:27:01 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/22 23:02:49 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/10/25 20:42:43 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ typedef struct s_philop
 	pthread_mutex_t	*r_fork;
 	pthread_mutex_t	*l_fork;
 	pthread_t		thread;
+	pthread_mutex_t	eatime;
 	size_t			last_time_eat;
 	struct s_table	*table;
 }					t_philop;
@@ -43,13 +44,14 @@ typedef struct s_table
 {
 	int				head;
 	size_t			start_time;
-	int			die_time;
+	int				die_time;
 	int				eat_time;
 	int				sleep_time;
 	int				min_times_to_eat;
 	bool			someone_died;
 	t_list			*garbabe_location;
 	pthread_mutex_t	death;
+
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	p_lock;
 	t_philop		*philop;

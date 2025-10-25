@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:06:00 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/22 21:20:11 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/10/25 20:43:51 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,9 @@ void	init_philop(t_table *pimp)
 		pimp->philop[i].table = pimp;
 		if (pimp->head == 1)
 			pimp->philop[i].r_fork = &pimp->forks[i];
-		else if (i == pimp->head - 1)
-			pimp->philop[i].r_fork = &pimp->forks[0];
 		else
-			pimp->philop[i].r_fork = &pimp->forks[i + 1];
+			pimp->philop[i].r_fork = &pimp->forks[(i + 1) % pimp->head];
+		pthread_mutex_init(&pimp->philop[i].eatime, NULL);
 		i++;
 	}
 }

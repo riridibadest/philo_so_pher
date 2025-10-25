@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 17:24:33 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/07/22 23:21:06 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/10/26 00:59:24 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 int	feast_time(t_table *pp)
 {
 	int			i;
-	pthread_t	td;
+	//pthread_t	td;
 
 	i = 0;
 	pp->start_time = get_time_ms();
@@ -27,14 +27,8 @@ int	feast_time(t_table *pp)
 			&pp->philop[i]);
 		i++;
 	}
-	i = 0;
-	pthread_create(&td, NULL, dead_yet, pp);
-	while (i < pp->head)
-	{
-		pthread_join(pp->philop[i].thread, NULL);
-		i++;
-	}
-	pthread_join(td, NULL);
+	// pthread_create(&td, NULL, dead_yet, pp);
+	//pthread_join(td, NULL);
 	return (1);
 }
 
@@ -50,6 +44,8 @@ void	*life_of_philop(void *pp)
 		return (NULL);
 	while (1)
 	{
+		if ((philop->id % 2) == 0) 
+			usleep(philop->table->eat_time /3);
 		pthread_mutex_lock(&philop->table->death);
 		state = philop->table->someone_died;
 		pthread_mutex_unlock(&philop->table->death);
@@ -57,8 +53,13 @@ void	*life_of_philop(void *pp)
 			return (NULL);
 		if (philop->eat_count == philop->table->min_times_to_eat)
     		philop->full = 1;
+		pthread_mutex_lock(&philop->eatime);
 		if (philop->full == 1)
+		{
+			pthread_mutex_unlock(&philop->eatime);
 			return (NULL);
+		}
+		pthread_mutex_unlock(&philop->eatime);
 		eat(philop);
 		p_sleep(philop);
 		thinking(philop);
@@ -73,10 +74,10 @@ void	*dead_yet(void *pp)
 	t_table	*eye;
 
 	eye = (t_table *)pp;
-	while (eye->someone_died != true)
+	while (1)
 	{
 		id = 0;
-		while (id < eye->head && eye->someone_died != true)
+		while (id < eye->head)
 		{
 			if (we_r_full(eye) == 0)
 				return (o_print(&eye->philop[0], 6, 1), NULL);
@@ -89,7 +90,7 @@ void	*dead_yet(void *pp)
 			}
 			id++;
 		}
-		usleep(10);
+		usleep(800);
 	}
 	return (NULL);
 }
@@ -103,12 +104,14 @@ int	we_r_full(t_table *pp)
 		return (1);
 	while (id < pp->head)
 	{
+		pthread_mutex_lock(&pp->philop[id].eatime);
 		// if (pp->philop[id].eat_count < pp->min_times_to_eat)
 		// 	return (1);
 		// if (pp->philop[id].eat_count == pp->min_times_to_eat)
 		// 	pp->philop[id].full = 1;
 		if (pp->philop[id].full == 0)
-			return (1);
+			return (pthread_mutex_unlock(&pp->philop[id].eatime), 1);
+		pthread_mutex_unlock(&pp->philop[id].eatime);
 		id++;
 	}
 	return (0);
