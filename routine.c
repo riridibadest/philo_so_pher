@@ -79,28 +79,36 @@ void	eat(t_philop *pp)
 	pthread_mutex_unlock(&pp->table->death);
 	if (state)
 		return ;
-
+	first = &pp->table->forks[(id - 1 + pp->table->head) % pp->table->head];
+	second = &pp->table->forks[id % pp->table->head];
 	// --- DEADLOCK FIX: ASYMMETRIC LOCKING ---
 	// Philosophers with an EVEN ID (2, 4, ...) lock the RIGHT fork first.
 	// Philosophers with an ODD ID (1, 3, 5, ...) lock the LEFT fork first.
-	if ((pp->id % 2) == 0) 
-	{ 
-		first = pp->r_fork; 
-		second = pp->l_fork; 
-	} 
-	else 
-	{ 
-		first = pp->l_fork; 
-		second = pp->r_fork; 
-	}
+	// if ((pp->id % 2) != 0) 
+	// { 
+	// 	first = pp->r_fork; 
+	// 	second = pp->l_fork; 
+	// } 
+	// else 
+	// { 
+	// 	first = pp->l_fork; 
+	// 	second = pp->r_fork; 
+	// }
 
 	pthread_mutex_lock(first);
+	pthread_mutex_lock(second);
 	o_print(pp, 1, id); // Log the first fork pickup
 
-	pthread_mutex_lock(second);
 	o_print(pp, 1, id); // Log the second fork pickup
 	// --- END OF FIX ---
-
+	// if (id == 3)
+	// 	printf("id: %zu, %d\n", id, pp[id - 1].fork);
+	// if (id == 1){
+	// 	printf("id: %zu, %d\n", id, pp[id - 1].fork);
+	// 	printf("id: %zu, %d\n", id, pp[id - 1].fork + 1);
+	// }
+	// if (id == 2)
+	// 	printf("id: %zu, %d\n", id, pp[id - 1].fork);
 	o_print(pp, 2, id);
 	pp->last_time_eat = get_time_ms();
 	pp->eat_count++;
