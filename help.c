@@ -62,14 +62,13 @@ void	o_print(t_philop *pp, int i, int id)
 	int	time;
 
 	time = (get_time_ms() - pp->table->start_time);
-	pthread_mutex_lock(&pp->table->p_lock);
 	pthread_mutex_lock(&pp->table->death);
 	if (pp->table->someone_died && i != 5)
 	{
-		pthread_mutex_unlock(&pp->table->p_lock);
 		pthread_mutex_unlock(&pp->table->death);
 		return ;
 	}
+	pthread_mutex_lock(&pp->table->p_lock);
 	if (i == 1)
 		printf("%d %d has taken a fork\n", time, (id));
 	else if (i == 2)
@@ -93,18 +92,41 @@ void	o_print(t_philop *pp, int i, int id)
 void	smart_rest(t_philop *pp, size_t i)
 {
 	size_t	now;
-	bool	state;
+	//bool	state;
 
-	now = get_time_ms();
-	while (get_time_ms() - now < i)
+	// pthread_mutex_lock(&pp->table->death);
+	// state = pp->table->someone_died;
+	// pthread_mutex_unlock(&pp->table->death);
+	// if (state)
+	// 	return ;
+	(void)pp;
+	now = get_time_ms() + i;
+	printf("Resting until: %zu, philo: %d\n", now, pp->id);
+	while (get_time_ms() < now)
 	{
-		pthread_mutex_lock(&pp->table->death);
-		state = pp->table->someone_died;
-		pthread_mutex_unlock(&pp->table->death);
-		if (state)
-			return ;
-		usleep(1000);
+		// pthread_mutex_lock(&pp->table->death);
+		// state = pp->table->someone_died;
+		// pthread_mutex_unlock(&pp->table->death);
+		// if (state)
+		// 	return ;
+		usleep(800);
 	}
 }
 
+// void	smart_rest(t_philop *pp, size_t i)
+// {
+// 	size_t	now;
+// 	bool	state;
+
+// 	now = get_time_ms();
+// 	while (get_time_ms() - now < i)
+// 	{
+// 		pthread_mutex_lock(&pp->table->death);
+// 		state = pp->table->someone_died;
+// 		pthread_mutex_unlock(&pp->table->death);
+// 		if (state)
+// 			return ;
+// 		usleep(1000);
+// 	}
+// }
 

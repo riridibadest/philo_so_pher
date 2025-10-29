@@ -57,6 +57,7 @@ typedef struct s_table
 	t_philop		*philop;
 }					t_table;
 
+int	check(t_table *pp, int ac);
 void				eat(t_philop *pp);
 void				p_sleep(t_philop *pp);
 void				thinking(t_philop *pp);
@@ -64,7 +65,7 @@ void				solo_eating(t_philop *pp);
 t_table				read_input(int ac, char **av);
 void				init_philop(t_table *pimp);
 void				make_philops(t_table *pp);
-t_table				make_table(int ac, char **av);
+t_table				make_table(int ac, char **av, t_table *pp);
 void				make_philops(t_table *pp);
 void				init_philop(t_table *pimp);
 t_table				read_input(int ac, char **av);

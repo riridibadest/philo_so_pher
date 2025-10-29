@@ -22,7 +22,8 @@ int	feast_time(t_table *pp)
 	i = 0;
 	pp->start_time = get_time_ms();
 	while (i < pp->head)
-	{
+	{	
+		pp->philop[i].last_time_eat = pp->start_time + 5;
 		pthread_create(&pp->philop[i].thread, NULL, life_of_philop,
 			&pp->philop[i]);
 		i++;
@@ -40,19 +41,15 @@ void	*life_of_philop(void *pp)
 	philop = (t_philop *)pp;
 	if (pp == NULL)
 		return (NULL);
-	if (philop->table->someone_died == true)
-		return (NULL);
 	while (1)
 	{
 		if ((philop->id % 2) == 0) 
-			usleep(philop->table->eat_time /3);
+			usleep(philop->table->eat_time * 0.75);
 		pthread_mutex_lock(&philop->table->death);
 		state = philop->table->someone_died;
 		pthread_mutex_unlock(&philop->table->death);
 		if (state)
 			return (NULL);
-		if (philop->eat_count == philop->table->min_times_to_eat)
-    		philop->full = 1;
 		pthread_mutex_lock(&philop->eatime);
 		if (philop->full == 1)
 		{
@@ -90,7 +87,8 @@ void	*dead_yet(void *pp)
 			}
 			id++;
 		}
-		usleep(800);
+		// smart_rest(pp, 1);
+		usleep(100);
 	}
 	return (NULL);
 }

@@ -37,7 +37,22 @@ t_table	read_input(int ac, char **av)
 	pthread_mutex_init(&feast.p_lock, NULL);
 	if (ac == 6)
 		feast.min_times_to_eat = ft_atoi(av[5]);
+	if (check(&feast, ac) == 0)
+	{
+		printf("Wrong Input Values\n");
+		exit (EXIT_FAILURE);
+	}
 	return (feast);
+}
+
+int	check(t_table *pp, int ac)
+{
+	if (pp->head < 0 || pp->die_time < 0 || pp->eat_time < 0
+		|| pp->sleep_time < 0)
+		return (0);
+	if (ac == 6 && pp->min_times_to_eat < 0)
+		return (0);
+	return (1);
 }
 
 // int	create(void)
@@ -94,15 +109,14 @@ void	make_philops(t_table *pp)
 	}
 }
 
-t_table	make_table(int ac, char **av)
+t_table	make_table(int ac, char **av, t_table *pp)
 {
-	t_table	pimp;
 
-	pimp = read_input(ac, av);
-	make_philops(&pimp);
-	init_philop(&pimp);
+	*pp = read_input(ac, av);
+	make_philops(pp);
+	init_philop(pp);
 	// Fix: Set start_time after all initialization is complete
-	pimp.start_time = get_time_ms();
+	//pimp.start_time = get_time_ms();
 	// Update all philosophers' last_time_eat to match start_time
-	return (pimp);
+	return (*pp);
 }

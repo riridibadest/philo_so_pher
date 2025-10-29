@@ -19,7 +19,7 @@ int	main(int ac, char **av)
 
 	if (ok_input(ac, av) == 0)
 		return (printf("Wrong Input or Wrong Number of Arguments"), 1);
-	pp = make_table(ac, av);
+	make_table(ac, av, &pp);
 	feast_time(&pp);
 	dead_yet(&pp);
 	i = 0;

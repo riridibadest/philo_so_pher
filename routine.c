@@ -79,8 +79,8 @@ void	eat(t_philop *pp)
 	first = &pp->table->forks[(id - 1 + pp->table->head) % pp->table->head];
 	second = &pp->table->forks[id % pp->table->head];
 	pthread_mutex_lock(first);
-	pthread_mutex_lock(second);
-	o_print(pp, 1, id); // Log the first fork pickup
+	o_print(pp, 1, id);
+	pthread_mutex_lock(second); // Log the first fork pickup
 
 	o_print(pp, 1, id); // Log the second fork pickup
 	// --- END OF FIX ---
@@ -100,7 +100,6 @@ void	eat(t_philop *pp)
 	if (pp->eat_count == pp->table->min_times_to_eat)
 		pp->full = 1;
 	pthread_mutex_unlock(&pp->eatime);
-	// Unlock in the reverse order of locking (second then first)
 	pthread_mutex_unlock(second);
 	pthread_mutex_unlock(first);
 }
@@ -114,8 +113,13 @@ void	p_sleep(t_philop *pp)
 	pthread_mutex_unlock(&pp->table->death);
 	if (state)
 		return ;
+	pthread_mutex_lock(&pp->eatime);
 	if (pp->full == 1)
+	{
+		pthread_mutex_unlock(&pp->eatime);
 		return ;
+	}
+	pthread_mutex_unlock(&pp->eatime);
 	o_print(pp, 3, pp->id);
 	smart_rest(pp, pp->table->sleep_time);
 }
@@ -129,8 +133,13 @@ void	thinking(t_philop *pp)
 	pthread_mutex_unlock(&pp->table->death);
 	if (state)
 		return ;
+	pthread_mutex_lock(&pp->eatime);
 	if (pp->full == 1)
+	{
+		pthread_mutex_unlock(&pp->eatime);
 		return ;
+	}
+	pthread_mutex_unlock(&pp->eatime);
 	o_print(pp, 4, pp->id);
 }
 
