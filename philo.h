@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:27:01 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/10/25 20:42:43 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/10/29 20:49:38 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ typedef struct s_philop
 	struct s_table	*table;
 }					t_philop;
 
-//for other purpose maybe
+// for other purpose maybe
 typedef struct s_list
 {
 	void			*now;
@@ -57,11 +57,13 @@ typedef struct s_table
 	t_philop		*philop;
 }					t_table;
 
-int	check(t_table *pp, int ac);
+int					check(t_table *pp, int ac);
 void				eat(t_philop *pp);
 void				p_sleep(t_philop *pp);
 void				thinking(t_philop *pp);
 void				solo_eating(t_philop *pp);
+int					take_forks(pthread_mutex_t *first, pthread_mutex_t *second,
+						t_philop *pp);
 t_table				read_input(int ac, char **av);
 void				init_philop(t_table *pimp);
 void				make_philops(t_table *pp);
@@ -75,7 +77,7 @@ int					ft_isdigit(int num);
 int					zero(int ac, char **av);
 void				*malloc_table_sth(t_table *pp, size_t size);
 size_t				get_time_ms(void);
-int				eat_gap(t_table *pp, int id);
+int					eat_gap(t_table *pp, int id);
 void				o_print(t_philop *pp, int i, int id);
 int					feast_time(t_table *pp);
 void				*life_of_philop(void *pp);
@@ -83,5 +85,6 @@ void				*dead_yet(void *pp);
 void				smart_rest(t_philop *pp, size_t i);
 int					we_r_full(t_table *pp);
 int					ft_atoi(const char *str);
+bool				check_death(t_philop *pp);
 
 #endif

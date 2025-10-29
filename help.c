@@ -6,14 +6,14 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:33:31 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/10/26 00:51:39 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/10/29 20:28:23 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-//here i malloc memory for storing things for content of a struct, and
-//create a list that technically store the same struct and return pointer at
+// here i malloc memory for storing things for content of a struct, and
+// create a list that technically store the same struct and return pointer at
 // end of list
 
 void	*malloc_table_sth(t_table *pp, size_t size)
@@ -47,7 +47,7 @@ size_t	get_time_ms(void)
 int	eat_gap(t_table *pp, int id)
 {
 	size_t	now;
-	int	hunger_time;
+	int		hunger_time;
 
 	now = get_time_ms();
 	pthread_mutex_lock(&pp->philop[id].eatime);
@@ -55,7 +55,7 @@ int	eat_gap(t_table *pp, int id)
 	pthread_mutex_unlock(&pp->philop[id].eatime);
 	return (hunger_time);
 }
-//1 = takefork; 2 = eating; 3 = sleeping; 4 = thinking; 5 = died
+// 1 = takefork; 2 = eating; 3 = sleeping; 4 = thinking; 5 = died
 
 void	o_print(t_philop *pp, int i, int id)
 {
@@ -63,11 +63,6 @@ void	o_print(t_philop *pp, int i, int id)
 
 	time = (get_time_ms() - pp->table->start_time);
 	pthread_mutex_lock(&pp->table->death);
-	if (pp->table->someone_died && i != 5)
-	{
-		pthread_mutex_unlock(&pp->table->death);
-		return ;
-	}
 	pthread_mutex_lock(&pp->table->p_lock);
 	if (i == 1)
 		printf("%d %d has taken a fork\n", time, (id));
@@ -92,23 +87,11 @@ void	o_print(t_philop *pp, int i, int id)
 void	smart_rest(t_philop *pp, size_t i)
 {
 	size_t	now;
-	//bool	state;
 
-	// pthread_mutex_lock(&pp->table->death);
-	// state = pp->table->someone_died;
-	// pthread_mutex_unlock(&pp->table->death);
-	// if (state)
-	// 	return ;
 	(void)pp;
 	now = get_time_ms() + i;
-	printf("Resting until: %zu, philo: %d\n", now, pp->id);
 	while (get_time_ms() < now)
 	{
-		// pthread_mutex_lock(&pp->table->death);
-		// state = pp->table->someone_died;
-		// pthread_mutex_unlock(&pp->table->death);
-		// if (state)
-		// 	return ;
 		usleep(800);
 	}
 }
@@ -129,4 +112,3 @@ void	smart_rest(t_philop *pp, size_t i)
 // 		usleep(1000);
 // 	}
 // }
-

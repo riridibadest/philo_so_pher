@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 17:24:33 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/10/26 00:59:24 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/10/29 20:48:31 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,40 +16,35 @@
 
 int	feast_time(t_table *pp)
 {
-	int			i;
-	//pthread_t	td;
+	int	i;
 
 	i = 0;
 	pp->start_time = get_time_ms();
 	while (i < pp->head)
-	{	
-		pp->philop[i].last_time_eat = pp->start_time + 5;
+	{
+		pp->philop[i].last_time_eat = pp->start_time;
 		pthread_create(&pp->philop[i].thread, NULL, life_of_philop,
 			&pp->philop[i]);
 		i++;
 	}
-	// pthread_create(&td, NULL, dead_yet, pp);
-	//pthread_join(td, NULL);
 	return (1);
 }
 
 void	*life_of_philop(void *pp)
 {
 	t_philop	*philop;
-	bool		state;
 
 	philop = (t_philop *)pp;
 	if (pp == NULL)
 		return (NULL);
 	while (1)
 	{
-		if ((philop->id % 2) == 0) 
+		if ((philop->id % 2) == 0)
 			usleep(philop->table->eat_time * 0.75);
 		pthread_mutex_lock(&philop->table->death);
-		state = philop->table->someone_died;
+		if (philop->table->someone_died)
+			return (pthread_mutex_unlock(&philop->table->death), NULL);
 		pthread_mutex_unlock(&philop->table->death);
-		if (state)
-			return (NULL);
 		pthread_mutex_lock(&philop->eatime);
 		if (philop->full == 1)
 		{
@@ -64,7 +59,7 @@ void	*life_of_philop(void *pp)
 	return (NULL);
 }
 
-//have to set checking_dead in the routine. so philops exit in time
+// have to set checking_dead in the routine. so philops exit in time
 void	*dead_yet(void *pp)
 {
 	int		id;
@@ -87,8 +82,7 @@ void	*dead_yet(void *pp)
 			}
 			id++;
 		}
-		// smart_rest(pp, 1);
-		usleep(100);
+		usleep(500);
 	}
 	return (NULL);
 }
@@ -103,14 +97,20 @@ int	we_r_full(t_table *pp)
 	while (id < pp->head)
 	{
 		pthread_mutex_lock(&pp->philop[id].eatime);
-		// if (pp->philop[id].eat_count < pp->min_times_to_eat)
-		// 	return (1);
-		// if (pp->philop[id].eat_count == pp->min_times_to_eat)
-		// 	pp->philop[id].full = 1;
 		if (pp->philop[id].full == 0)
 			return (pthread_mutex_unlock(&pp->philop[id].eatime), 1);
 		pthread_mutex_unlock(&pp->philop[id].eatime);
 		id++;
 	}
 	return (0);
+}
+
+bool	check_death(t_philop *pp)
+{
+	bool	state;
+
+	pthread_mutex_lock(&pp->table->death);
+	state = pp->table->someone_died;
+	pthread_mutex_unlock(&pp->table->death);
+	return (state);
 }

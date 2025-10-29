@@ -6,7 +6,7 @@
 /*   By: yuerliu <yuerliu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:06:00 by yuerliu           #+#    #+#             */
-/*   Updated: 2025/10/25 20:43:51 by yuerliu          ###   ########.fr       */
+/*   Updated: 2025/10/29 20:45:22 by yuerliu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,8 +115,5 @@ t_table	make_table(int ac, char **av, t_table *pp)
 	*pp = read_input(ac, av);
 	make_philops(pp);
 	init_philop(pp);
-	// Fix: Set start_time after all initialization is complete
-	//pimp.start_time = get_time_ms();
-	// Update all philosophers' last_time_eat to match start_time
 	return (*pp);
 }
